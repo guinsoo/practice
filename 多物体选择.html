@@ -1,0 +1,138 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<meta http-equiv="Content-Type" content="text/html; charset=gbk" />
+  <head>
+		<title>多物体选择</title>
+		<style>
+		*{margin:0;padding:0;list-style:none;}
+		#div1{width:100%;height: 300px;background: #ccc; }
+        .ulcon{margin: 0 auto; width: 860px;height: 120px;overflow:hidden;}
+        .licon{width:160px;height: 120px;position: relative;}
+        .divcon{position: absolute;height: 25px;top:120px;width:160px;background:darkgoldenrod}
+        #div1 li{float:left;margin-left:10px;padding-left: 10px;}
+		</style>
+        <script type="text/javascript">
+
+            function getStyle(obj,attr){
+                if(obj.currentStyle){
+                    return obj.currentStyle[attr];
+                }
+                else{
+                    return getComputedStyle(obj,null)[attr];
+                }
+            }
+            //封装函数,通过class获取元素;
+            function getByClass(oParent,aClass)
+            {
+                var aEle=oParent.getElementsByTagName("*");
+
+                var aResult=[];
+                for(i=0;i<aEle.length;i++)
+                {
+                    if(aEle[i].className==aClass)
+                    {
+                        aResult.push(aEle[i]);	//将获取到的元素加入到数组aResult中
+                    }
+                }
+                return aResult;		//返回数组aResult;
+            }
+
+            window.onload=function(){
+                var oDiv=document.getElementById("div1");
+                var aUlcon=getByClass(oDiv,"ulcon");
+                var aLicon=getByClass(oDiv,"licon");
+                var aDivcon=getByClass(oDiv,"divcon");
+                //alert(aLicon);
+
+                for(i=0;i<aLicon.length;i++){
+                        aLicon[i].index=i;
+                            aLicon[i].onmouseover=function(){
+
+                                    for(var i=0;i<aLicon.length;i++)
+                                    {
+                                        startMove(aLicon[this.index],"opacity",80);
+                                      //  aDivcon[this.index].style.display="block";
+                                        startMove(aDivcon[this.index],"top",95);
+                                    }
+                           }
+                    }
+
+                for(i=0;i<aLicon.length;i++){
+                        aLicon[i].index=i;
+                        aLicon[i].onmouseout=function(){
+
+                            for(var i=0;i<aLicon.length;i++)
+                            {
+                                startMove(aLicon[this.index],"opacity",100);
+
+                                startMove(aDivcon[this.index],"top",120);
+                               // aDivcon[this.index].style.display="none";
+                            }
+                        }
+                    }
+         }
+
+                function startMove(obj,attr,iTarget){
+                    clearInterval(obj.timer); //关闭定时器
+                    obj.timer=setInterval(function(){
+
+                        var curValue=0;
+                        //若改变opacity
+                        if(attr=="opacity")
+                        {
+                            curValue=Math.round(parseFloat(getStyle(obj,attr))*100);	//四舍五入,去除小数部分;
+                        }
+                        //非opacity
+                        else
+                        {
+                            curValue=parseInt(getStyle(obj,attr));
+                        }
+                        var speed=(iTarget-curValue)/6;
+                        speed=speed>0?Math.ceil(speed):Math.floor(speed);		//缓冲运动，速度取整;
+
+                        if(curValue==iTarget)
+                        {
+                            clearInterval(obj.timer);		//到达目标点，停止obj定时器;
+                        }
+                        else
+                        {
+                            //opacity处理
+                            if(attr=="opacity")
+                            {
+                                obj.style.filter="alpha(opacity:"+(curValue+speed)+")";		//IE浏览器兼容;
+                                obj.style.opacity=(curValue+speed)/100;		//FF、Chrome浏览器兼容;
+                            }
+                            else
+                            {
+                                //非opacity处理;
+                                obj.style[attr]=curValue+speed+"px";		//未到达目标，运动继续;
+                            }
+                        }
+                    },30)
+                }
+
+        </script>
+	</head>
+	<body>
+		<div  id="div1">
+            <ul class="ulcon">
+                <li class="licon">
+                    <img src="img01.jpg"/>
+                    <div class="divcon">标签1</div>
+                </li>
+                <li class="licon">
+                    <img src="img02.jpg"/>
+                    <div class="divcon">标签2</div>
+                </li>
+                <li class="licon">
+                    <img src="img03.jpg"/>
+                    <div class="divcon">标签3</div>
+                </li>
+                <li class="licon">
+                    <img src="img04.jpg"/>
+                    <div class="divcon">标签4</div>
+                </li>
+            </ul>
+		</div>
+	</body>
+</html>	
